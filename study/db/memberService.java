@@ -2,7 +2,7 @@ package study.db;
 
 import java.sql.*;
 
-public class DbTest {
+public class memberService {
 
 
     public void dbSelect(){
@@ -90,7 +90,11 @@ public class DbTest {
 
     }
 
-    public void dbInsert(){
+    /**
+     * 회원 가입 함수
+     * @param member 회원정보
+     */
+    public void register(Member member){
 //        1. ip(domain) , 2. port , 3. 계정 , 4. password , 5. instance
 
         String url = "jdbc:mariadb://192.168.64.3:3306/testdb1";
@@ -109,11 +113,6 @@ public class DbTest {
 
 
 
-        String memberTypeValue = "email";
-        String userIdValue = "zerobase@naver.com";
-        String passwordValue = "3333";
-        String nameValue = "zerobase";
-
         try {
             connection = DriverManager.getConnection(url, dbUserId, dbPassword);
 
@@ -121,10 +120,10 @@ public class DbTest {
                     "value (?, ?, ?, ?); ";
 
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, memberTypeValue);
-            preparedStatement.setString(2, userIdValue);
-            preparedStatement.setString(3, passwordValue);
-            preparedStatement.setString(4, nameValue);
+            preparedStatement.setString(1, member.getMemberType());
+            preparedStatement.setString(2, member.getUserId());
+            preparedStatement.setString(3, member.getPassword());
+            preparedStatement.setString(4, member.getName());
 
             int affected = preparedStatement.executeUpdate();
 
@@ -243,7 +242,10 @@ public class DbTest {
 
     }
 
-    public void dbDelete(){
+    /**
+     * 회원 탈퇴 함수
+     */
+    public void withdraw(Member member){
 //        1. ip(domain) , 2. port , 3. 계정 , 4. password , 5. instance
 
         String url = "jdbc:mariadb://192.168.64.3:3306/testdb1";
@@ -262,10 +264,6 @@ public class DbTest {
 
 
 
-        String memberTypeValue = "email";
-        String userIdValue = "zerobase@naver.com";
-
-
         try {
             connection = DriverManager.getConnection(url, dbUserId, dbPassword);
 
@@ -273,8 +271,8 @@ public class DbTest {
                     "where member_type = ? and user_id = ? ";
 
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, memberTypeValue);
-            preparedStatement.setString(2, userIdValue);
+            preparedStatement.setString(1, member.getMemberType());
+            preparedStatement.setString(2, member.getUserId());
 
             int affected = preparedStatement.executeUpdate();
 
