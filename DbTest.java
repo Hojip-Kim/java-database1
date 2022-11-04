@@ -24,15 +24,25 @@ public class DbTest {
             throw new RuntimeException(e);
         }
 
-        try {
-            Connection connection = DriverManager.getConnection(url, dbUserId, dbPassword);
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
 
-            Statement statement = connection.createStatement();
+        //email, kakao, facebook
+
+        String memberTypeValue = "email";
+
+        try {
+            connection = DriverManager.getConnection(url, dbUserId, dbPassword);
 
             String sql = " select member_type, user_id, password, name " +
                     " from member " +
-                    " where member_type = 'email' ";
-            ResultSet rs = statement.executeQuery(sql); //쿼리 실행 결과 수행 (rs로)
+                    " where member_type = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, memberTypeValue);
+
+            rs = preparedStatement.executeQuery();
 
             while(rs.next()){
                 String memberType = rs.getString("member_type");
@@ -41,23 +51,38 @@ public class DbTest {
                 String name = rs.getString("name");
 
                 System.out.println(memberType + ", " + userId + ", " + password + ", " + name);
-            }
 
-            if(!rs.isClosed()){
-                rs.close();
-            }
 
-            if(!statement.isClosed()){
-                statement.close();
-            }
-
-            if(!connection.isClosed()){
-                connection.close();
             }
 
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+
+            try {
+                if(rs != null && !rs.isClosed()){
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            try {
+                if(preparedStatement != null && !preparedStatement.isClosed()){
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            try {
+                if(rs != null && !connection.isClosed()){
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
 
 
